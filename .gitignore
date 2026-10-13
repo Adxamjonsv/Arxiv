@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+*.session
+*.session-journal
+archive.db*
+*.db
+storage/
+sessions/
+runtime_tools/
+.venv/
+.idea/
+__pycache__/
+*.pyc
+*.log
+/Изображение ChatGPT*.png
