@@ -58,6 +58,10 @@ def verify_init_data(init_data: str, bot_token: str) -> dict:
 def create_miniapp(settings: Settings, db: Database) -> FastAPI:
     app = FastAPI(title="Business Archive Mini App", docs_url=None, redoc_url=None)
 
+    @app.get("/health")
+    async def health():
+        return {"status": "ok"}
+
     def owner_id(init_data: str | None) -> int:
         if init_data is None:
             raise HTTPException(status_code=401, detail="Open this app from Telegram")

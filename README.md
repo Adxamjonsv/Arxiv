@@ -16,6 +16,12 @@ Set PyCharm's Python interpreter to a working Python 3.11+ environment, then run
 
 To run `main.py` directly, provide a stable public HTTPS URL through `MINI_APP_URL`; the automatic Quick Tunnel behavior is in `start.py`.
 
+### Deploy to Railway
+
+Railway uses the included Linux `Dockerfile` and starts `main.py` directly. Do not use `start.py` on Railway; that launcher is for Windows/PyCharm and starts a local Cloudflare Quick Tunnel. In Railway, add `BOT_TOKEN` as a service variable, generate a public domain under **Settings → Networking**, and set `ADMIN_IDS` to your own Telegram numeric ID if you need the admin panel. The app automatically uses Railway's `RAILWAY_PUBLIC_DOMAIN` for its Mini App URL and listens on Railway's `PORT`.
+
+For persistent archives, attach a Railway Volume mounted at `/data`, then set `DATABASE_PATH=/data/archive.db` and `STORAGE_DIR=/data/storage` in service variables. Keep the service at one replica because this version uses SQLite and local files. Configure `/health` as the Railway healthcheck path if desired. Never commit `.env` or paste `BOT_TOKEN` into GitHub or chat.
+
 The Business account must grant the message access required by Telegram. The bot only receives the chats and update types permitted by the connection and Telegram's Bot API.
 
 ## Commands

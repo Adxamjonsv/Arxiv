@@ -30,10 +30,17 @@ class Settings:
         if not 1 <= max_download_mb <= 20:
             raise RuntimeError("MAX_DOWNLOAD_MB must be between 1 and 20 for the standard Telegram Bot API")
         mini_app_url = os.getenv("MINI_APP_URL", "").strip().rstrip("/")
+        railway_domain = os.getenv("RAILWAY_PUBLIC_DOMAIN", "").strip().strip("/")
+        running_on_railway = bool(railway_domain or os.getenv("RAILWAY_ENVIRONMENT"))
+        # Railway provides a public domain after one is generated in the service's
+        # Networking settings. Reuse it for Telegram's HTTPS Mini App button.
+        if not mini_app_url and railway_domain:
+            mini_app_url = f"https://{railway_domain.removeprefix('https://')}"
         if mini_app_url and not mini_app_url.startswith("https://"):
             raise RuntimeError("MINI_APP_URL must use HTTPS so Telegram can open the Mini App")
         mini_app_port = int(os.getenv("MINI_APP_PORT", "8080"))
-        if not 1 <= mini_app_port <= 65535:
+        listen_port = int(os.getenv("PORT", str(mini_app_port)))
+        if not 1 <= listen_port <= 65535:
             raise RuntimeError("MINI_APP_PORT must be between 1 and 65535")
         raw_admin_ids = os.getenv("ADMIN_IDS", "")
         try:
@@ -49,7 +56,8 @@ class Settings:
             max_download_mb=max_download_mb,
             log_level=os.getenv("LOG_LEVEL", "INFO").upper(),
             mini_app_url=mini_app_url,
-            mini_app_host=os.getenv("MINI_APP_HOST", "127.0.0.1"),
-            mini_app_port=mini_app_port,
+            mini_app_host=("0.0.0.0" if running_on_railway
+                           else os.getenv("MINI_APP_HOST", "127.0.0.1")),
+            mini_app_port=listen_port,
             admin_ids=admin_ids,
         )
